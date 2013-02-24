@@ -8,25 +8,17 @@ body {
 }
 
 #outer {
+    padding:40px 0;
     background: rgba(255, 255, 255, 0.80);
 }
 
 /* SELECTABLE OPTIONS */
-
-.story {
-    cursor: pointer;
-    line-height: 30px;
-}
 
 .story .score {
     font-weight: bold;
     color: #777;
 }
 
-.story.selected {
-    background-color: yellow;
-}
-
-.story.selected .score {
-    color: black;
+.bold {
+    font-weight: bold;
 }

@@ -16,43 +16,46 @@
 
     <div class="row-fluid">
       <form class="story">
-        <label for="storyInput">What's gonna happen?</label>
-        <input type="text" class="span12" id="storyInput" />
+        <label for="storySelect"><h1>What happens next?</h1></label>
+        <select id="storySelect">
+          {{#each mysteries}}
+           <option value="{{text}}">{{text}}</option>
+          {{/each}}
+        </select>
+
+        <label for="storyInput"><h4>Because...</h4></label>
+        <input type="text" class="span12" id="storyInput" placeholder="Aliens abduct your engineers!" />
         <input type="submit" class="btn-block btn" value="Submit" />
       </form>
+    </div>
+
+    <div class="row-fluid">
+      <h1>Vote on scenarios:</h1>
+    </div>
+
+    <div class="row-fluid">
+      <div class="span8 bold">Description</div>
+      <div class="span2 bold"># Votes</div>
+      <div class="span2 bold">Vote</div>
     </div>
 
     {{#each stories}}
       {{> story}}
     {{/each}}
-
-    {{#if selected_story}}
-      <div class="row-fluid">
-        <div class="span12">
-          <input type="button" class="inc btn" value="Cast Vote" />
-        </div>
-      </div>
-    {{/if}}
-
-    <h3>Options (should be empty):</h3>
-    {{#each options}}
-      {{> option}}
-    {{/each}}
-    </div>
   </div>
 </template><!-- :SpaceRace -->
 
 <template name="story">
-  <div class="row-fluid story {{selected}}">
-    <span class="span6 name">{{text}}</span>
-    <span class="span4 name">{{mystery}}</span>
-    <span class="span2 score">{{upvotes}}</span>
+  <div class="row-fluid story">
+    <div class="span8 name"><u>{{mystery}}</u> <em>because</em> <u>{{text}}</u></div>
+    <div class="span2 score">{{upvotes}}</div>
+    <div class="span2">
+      {{#if canVote}}
+        <input type="button" class="inc btn" value="Cast Vote" />
+      {{else}}
+        Vote cast!
+      {{/if}}
+    </div>
   </div>
 </template><!-- :story -->
-
-<template name="option">
-  <div class="row-fluid option {{selected}}">
-    <span class="span8 name">!!NAME!!</span>
-  </div>
-</template><!-- :option -->
 

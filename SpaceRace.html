@@ -13,6 +13,15 @@
 
 <template name="SpaceRace">
   <div class="SpaceRace container">
+
+    <form>
+      What's gonna happen?<input type="text" id="myInput">
+      <input type="button" class="something btn" value="Go" />
+     </form>
+      {{#each stories}}
+        {{> story}}
+      {{/each}}
+
       {{#each options}}
         {{> option}}
       {{/each}}
@@ -33,4 +42,10 @@
     <span class="span4 score">{{score}}</span>
   </div>
 </template><!-- :option -->
+
+<template name="story">
+  <div class="row-fluid option">
+    <span class="span12 name">{{text}}</span>
+  </div>
+</template><!-- :story -->
 

@@ -2,7 +2,7 @@
   <title>SpaceRace</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="SpaceRace: The audience participation boardgame">
-  <meta name="author" content="leoj3n, shart, presh">
+  <meta name="author" content="joel, steve, prash">
 </head>
 
 <body>
@@ -14,38 +14,45 @@
 <template name="SpaceRace">
   <div class="SpaceRace container">
 
-    <form>
-      What's gonna happen? <input type="text" id="myInput">
-      <input type="button" class="something btn" value="Go" />
-     </form>
-      {{#each stories}}
-        {{> story}}
-      {{/each}}
+    <div class="row-fluid">
+      <form class="story">
+        <label for="storyInput">What's gonna happen?</label>
+        <input type="text" class="span12" id="storyInput" />
+        <input type="submit" class="btn-block btn" value="Submit" />
+      </form>
+    </div>
 
-      {{#each options}}
-        {{> option}}
-      {{/each}}
-      {{#if selected_name}}
-        <div class="row-fluid">
-          <div class="span12">
-            <input type="button" class="inc btn" value="Add value" />
-          </div>
+    {{#each stories}}
+      {{> story}}
+    {{/each}}
+
+    {{#if selected_story}}
+      <div class="row-fluid">
+        <div class="span12">
+          <input type="button" class="inc btn" value="Cast Vote" />
         </div>
-      {{/if}}
+      </div>
+    {{/if}}
+
+    <h3>Options (should be empty):</h3>
+    {{#each options}}
+      {{> option}}
+    {{/each}}
     </div>
   </div>
 </template><!-- :SpaceRace -->
 
-<template name="option">
-  <div class="row-fluid option {{selected}}">
-    <span class="span8 name">{{name}}</span>
-    <span class="span4 score">{{score}}</span>
-  </div>
-</template><!-- :option -->
-
 <template name="story">
-  <div class="row-fluid option">
-    <span class="span12 name">{{text}}</span>
+  <div class="row-fluid story {{selected}}">
+    <span class="span6 name">{{text}}</span>
+    <span class="span4 name">{{mystery}}</span>
+    <span class="span2 score">{{upvotes}}</span>
   </div>
 </template><!-- :story -->
+
+<template name="option">
+  <div class="row-fluid option {{selected}}">
+    <span class="span8 name">!!NAME!!</span>
+  </div>
+</template><!-- :option -->
 

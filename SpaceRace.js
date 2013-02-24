@@ -1,8 +1,8 @@
 // Create a client + MongoDB collection
 
-Options = new Meteor.Collection( "options" );
-Stories = new Meteor.Collection( "stories" );
-
+Options   = new Meteor.Collection( "options" );   // general options
+Mysteries = new Meteor.Collection( "mysteries" ); // the mystery possibilities
+Stories   = new Meteor.Collection( "stories" );   // users submit these, also contains: mysteryID, upvotes
 
 //
 // CLIENT
@@ -21,29 +21,27 @@ if( Meteor.isClient ) {
   // TEMPLATE STUFF
   // 
 
-  // "find" the options, sort by score, then by name...
   // @return Array (of options)
-
   Template.SpaceRace.options = function () {
-    return Options.find( {}, { sort: { score: -1, name: 1 } } );
+    return Options.find( {} );
   };
 
+  // @return Array (of stories, sorted by upvotes)
   Template.SpaceRace.stories = function () {
-    return Stories.find( {}, { sort: { text: 1 } } );
-  };
-  // return option name of selected option (using session.get)
-  // @return String
-
-  Template.SpaceRace.selected_name = function () {
-    var option = Options.findOne( Session.get( "selected_option" ) );
-    return option && option.name;
+    return Stories.find( {}, { sort: { upvotes: -1 } } );
   };
 
-  // return "selected" if option.id is equal to selected_option in session or "" if not
-  // @return Boolean
+  // get ObjectID of selected story for user (using session.get)
+  // @return Integer (ObjectID???)
+  Template.SpaceRace.selected_story = function () {
+    var story = Stories.findOne( Session.get( "selected_story" ) );
+    return story && story._id;
+  };
 
-  Template.option.selected = function () {
-    return Session.equals( "selected_option", this._id ) ? "selected" : '';
+  // Is selected_story (in session) == story._id?
+  // @return String (or empty string)
+  Template.story.selected = function () {
+    return Session.equals( "selected_story", this._id ) ? "selected" : '';
   };
 
   // 
@@ -52,22 +50,29 @@ if( Meteor.isClient ) {
 
   // SpaceRace events
   Template.SpaceRace.events({
+
     'click input.inc': function () {
-      Options.update( Session.get( "selected_option" ), { $inc: { score: 5 } } );
-    }, 
+      Stories.update( Session.get( "selected_story" ), { $inc: { upvotes: 1 } } );
+    },
 
-    'click input.something': function () {
-      var tmp = Stories.insert( { text: $('#myInput').val() } );
+    'submit form.story': function () {
+      var val = $("#storyInput").val();
 
-      console.log( tmp );
+      Stories.insert( { text: val, mystery: 0, upvotes: 0 } );
+
+      return false; // prevent form submission
     }
+
   });
 
-  // set selected option on click of option name
-  Template.option.events({
+  // stories events
+  Template.story.events({
+
+    // set selected option (in session) on click of option name
     'click': function () {
-      Session.set( "selected_option", this._id );
+      Session.set( "selected_story", this._id );
     }
+
   });
 }
 
@@ -77,22 +82,20 @@ if( Meteor.isClient ) {
 
 if( Meteor.isServer ) {
   Meteor.startup( function() {
-   //Stories.insert( { text:"hi" } );
-  
+
     // initialize options if none exist
-    if( Options.find().count() === 0 ) {
-      // mystery
-      var names = ["Swap Places",
-                   "Lose an Asteroid",
-                   "Lose Money",
-                   "Skip Turn",
-                   "Steal Asteroid"]; // because...
+    if( Mysteries.find().count() === 0 ) {
+      var mysteries = ["Swap Places",
+                       "Lose an Asteroid",
+                       "Lose Money",
+                       "Skip Turn",
+                       "Steal Asteroid"]; // because...
 
-      /*var control = ["Mining resources run out!",
-                   "You found gold!"]; // therefore you...*/
+      /*var controls = ["Mining resources run out!",
+                      "You found gold!"]; // therefore you...*/
 
-      for (var i = 0; i < names.length; i++)
-        Options.insert( { name: names[i], score: i } );
+      for (var i = 0; i < mysteries.length; i++)
+        Mysteries.insert( { name: mysteries[i] } );
     }
 
   });

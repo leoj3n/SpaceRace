@@ -2,6 +2,8 @@
 
 Options = new Meteor.Collection( "options" );
 
+Stories = new Meteor.Collection( "stories" );
+
 //
 // CLIENT
 //
@@ -24,6 +26,10 @@ if( Meteor.isClient ) {
 
   Template.SpaceRace.options = function () {
     return Options.find( {}, { sort: { score: -1, name: 1 } } );
+  };
+
+  Template.SpaceRace.stories = function () {
+    return Stories.findOne( {} );
   };
 
   // return option name of selected option (using session.get)
@@ -66,6 +72,7 @@ if( Meteor.isClient ) {
 
 if( Meteor.isServer ) {
   Meteor.startup( function() {
+    Stories.insert( { text: "testing!" } );
     
     // initialize options if none exist
     if( Options.find().count() === 0 ) {

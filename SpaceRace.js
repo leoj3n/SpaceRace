@@ -1,6 +1,8 @@
 // Create a client + MongoDB collection
 
 Options = new Meteor.Collection( "options" );
+Stories = new Meteor.Collection( "stories" );
+
 
 //
 // CLIENT
@@ -26,6 +28,9 @@ if( Meteor.isClient ) {
     return Options.find( {}, { sort: { score: -1, name: 1 } } );
   };
 
+  Template.SpaceRace.stories = function () {
+    return Stories.find( {}, { sort: { text: 1 } } );
+  };
   // return option name of selected option (using session.get)
   // @return String
 
@@ -49,6 +54,12 @@ if( Meteor.isClient ) {
   Template.SpaceRace.events({
     'click input.inc': function () {
       Options.update( Session.get( "selected_option" ), { $inc: { score: 5 } } );
+    }, 
+
+    'click input.something': function () {
+      var tmp = Stories.insert( { text: $('#myInput').val() } );
+
+      console.log( tmp );
     }
   });
 
@@ -66,7 +77,8 @@ if( Meteor.isClient ) {
 
 if( Meteor.isServer ) {
   Meteor.startup( function() {
-    
+   //Stories.insert( { text:"hi" } );
+  
     // initialize options if none exist
     if( Options.find().count() === 0 ) {
       // mystery
@@ -81,9 +93,11 @@ if( Meteor.isServer ) {
 
       for (var i = 0; i < names.length; i++)
         Options.insert( { name: names[i], score: i } );
+
     }
 
   });
 }
+
 
 // random snippit of code...: Math.floor(Random.fraction()*10)*5

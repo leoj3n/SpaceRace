@@ -16,11 +16,11 @@ Players play one on one face to face while the global audience defines what cosm
 
 An interactive and new way to play a Monopoly style game.
 
-### BACKGROUND
+### Background
 
 It’s year 2025. Asteroid mining is big business. And it’s a race for space real estate.  Pew! pew! it out against your opponent to become the Donald Trump of space.
 
-### HOW TO PLAY
+### How To Play
 
 Two players start with $1200. As you move along the board, you purchase asteroid property to mine. If your opponent lands on your property, they must pay 20% of the value of the property.
 

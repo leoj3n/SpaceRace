@@ -12,48 +12,61 @@
 </body>
 
 <template name="SpaceRace">
-  <div class="SpaceRace container">
-
+  <div class="SpaceRace container">  
     <div class="row-fluid">
-      <form class="story">
-        <label for="storySelect"><h1>What happens next?</h1></label>
-        <select id="storySelect">
-          {{#each mysteries}}
-           <option value="{{text}}">{{text}}</option>
-          {{/each}}
-        </select>
+      {{#if started}}
+        <form class="story">
+          <label for="storySelect"><h1>
+          {{#if human}}
+            The player is in your control!!!
+          {{else}}
+            What happens next?
+          {{/if}}
+          </h1></label>
+          <hr />
+          <select id="storySelect">
+            {{#each mysteries}}
+             <option value="{{text}}">{{text}}</option>
+            {{/each}}
+          </select>
 
-        <label for="storyInput"><h4>Because...</h4></label>
-        <input type="text" class="span12" id="storyInput" placeholder="Aliens abduct your engineers!" />
-        <input type="submit" class="btn-block btn" value="Submit" />
-      </form>
+          <label for="storyInput"><h4>because...</h4></label>
+          <input type="text" class="span12" id="storyInput" placeholder="eg: aliens abduct your engineers!" />
+          <input type="submit" class="btn-block btn" value="Submit" />
+        </form>
+      {{else}}
+        <h1>Waiting for game to start...</h1>
+      {{/if}}
     </div>
 
-    <div class="row-fluid">
-      <h1>Vote on scenarios:</h1>
-    </div>
+    {{#if hasScenarios}}
+      <div class="row-fluid">
+        <h1>Vote on scenarios: +{{votesRemaining}} remaining</h1>
+        <hr />
+      </div>
 
-    <div class="row-fluid">
-      <div class="span8 bold">Description</div>
-      <div class="span2 bold"># Votes</div>
-      <div class="span2 bold">Vote</div>
-    </div>
+      <div class="row-fluid">
+        <div class="span10 bold">Description of scenario...</div>
+        <div class="span1 bold">Votes</div>
+        <div class="span1 bold"></div>
+      </div>
 
-    {{#each stories}}
-      {{> story}}
-    {{/each}}
+      {{#each stories}}
+        {{> story}}
+      {{/each}}
+    {{/if}}
   </div>
 </template><!-- :SpaceRace -->
 
 <template name="story">
   <div class="row-fluid story">
-    <div class="span8 name"><u>{{mystery}}</u> <em>because</em> <u>{{text}}</u></div>
-    <div class="span2 score">{{upvotes}}</div>
-    <div class="span2">
+    <div class="span10 name"><b>{{mystery}}</b> <em>because</em> <b class="red">{{text}}</b></div>
+    <div class="span1 score">{{upvotes}}</div>
+    <div class="span1">
       {{#if canVote}}
-        <input type="button" class="inc btn" value="Cast Vote" />
+        <input type="button" class="inc btn" value="+1" />
       {{else}}
-        Vote cast!
+        <input type="button" class="btn" value="+1" disabled />
       {{/if}}
     </div>
   </div>

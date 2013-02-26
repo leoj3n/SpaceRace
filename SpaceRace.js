@@ -1,7 +1,8 @@
-Mysteries = new Meteor.Collection( "mysteries" ); // the mystery possibilities
-Stories   = new Meteor.Collection( "stories" );   // users submit these, also contains: mysteryID, upvotes
+Stories   = new Meteor.Collection( "stories" );
+Mysteries = new Meteor.Collection( "mysteries" );
+State     = new Meteor.Collection( "state" );
 
-var MASTER_VOTE_TIME = 1361730475687; // (new Date).getTime()
+maxVotes = 5;
 
 //
 // CLIENT SIDE
@@ -10,8 +11,7 @@ var MASTER_VOTE_TIME = 1361730475687; // (new Date).getTime()
 if( Meteor.isClient ) {
 
   Meteor.startup( function() {
-    //Session.set( "last_vote_time", (new Date).getTime() );
-    console.log( Session.get( "last_vote_time" ) );
+    sessions();
   });
 
   // 
@@ -26,8 +26,24 @@ if( Meteor.isClient ) {
     return Mysteries.find( {} );
   };
 
+  Template.SpaceRace.hasScenarios = function () {
+    return (Stories.findOne( {} ) != undefined);
+  };
+
+  Template.SpaceRace.votesRemaining = function () {
+    return Session.get( "votes_remaining" );
+  };
+
+  Template.SpaceRace.started = function () {
+    return Session.get( "started" );
+  };
+
+  Template.SpaceRace.human = function () {
+    return Session.get( "human" );
+  };
+
   Template.story.canVote = function () {
-    return ((Session.get( "last_vote_time" ) > MASTER_VOTE_TIME) ? false : true);
+    return ((Session.get( "votes_remaining" ) > 0) && Session.get( "voting" ));
   };
 
   // 
@@ -36,20 +52,26 @@ if( Meteor.isClient ) {
 
   Template.SpaceRace.events({
 
-    // ADDs a STORY on CLICK
     'submit form.story': function () {
-      Stories.insert( { text: $("#storyInput").val(), mystery: $("#storySelect").val(), upvotes: 0, time: (new Date).getTime() } );
-      return false; // prevent form submission
+      var val = $("#storyInput").val();
+      
+      if (val == "")
+        alert("Cannot be empty.");
+      else
+        Stories.insert( { text: $("#storyInput").val(), mystery: $("#storySelect").val(), upvotes: 0 } );
+      
+      $("#storyInput").val('');
+
+      return false;
     }
 
   });
 
   Template.story.events({
 
-    // cast VOTE on CLICK, and set "LVT"
     'click input.inc': function () {
       Stories.update( this._id, { $inc: { upvotes: 1 } } );
-      Session.set( "last_vote_time", (new Date).getTime() );
+      Session.set( "votes_remaining", (Session.get( "votes_remaining" ) - 1) );
     }
 
   });
@@ -61,8 +83,9 @@ if( Meteor.isClient ) {
 
 if( Meteor.isServer ) {
   Meteor.startup( function() {
-    Stories.remove( { time: { $lt: MASTER_VOTE_TIME } } );
-    Mysteries.remove({});
+
+    Stories.remove( {} );
+    Mysteries.remove( {} );
 
     /*var controls = ["Mining resources run out!",
                     "You found gold!"]; // therefore you...*/
@@ -77,5 +100,33 @@ if( Meteor.isServer ) {
 
     for (var i = 0; i < mysteries.length; i++)
       Mysteries.insert( { text: mysteries[i] } );
+
   });
+}
+
+function sessions() {
+    Session.set( "votes_remaining", maxVotes );
+    Session.set( "started", false );
+    Session.set( "voting", false );
+    Session.set( "human", false );
+}
+
+// hack to reset everything
+function stop() {
+  Stories.remove( {} );
+  sessions();
+}
+
+function start() {
+  stop();
+  Session.set( "started", true );
+}
+
+function voting() {
+  Session.set( "voting", true );
+}
+
+function human() {
+  start();
+  Session.set( "human", true );
 }
